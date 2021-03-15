@@ -1,0 +1,99 @@
+---
+title: "Problem 2"
+output: html_notebook
+---
+
+ 
+1.The dataset is a data frame with 10 variables and 20640 observations. There are 9 numerical and 1 categorical attributes in the set.
+```{r}
+housing = read.csv("housing.csv", stringsAsFactors = TRUE)
+str(housing)
+attach(housing)
+```
+
+2. According to the summary of the data set, the total bedrooms variable has 207 missing values
+
+```{r}
+summary(housing)
+
+```
+
+3. The percentage of rows with missing values is 1.002
+```{r}
+missing = complete.cases (housing)
+prop.table(table(missing))*100
+
+```
+
+4. Remove the rows with missing values
+
+```{r}
+housing = na.omit(housing)
+summary(housing)
+
+
+```
+
+5. The Histogram and box plot of the median house value shows that the sample of median house value is positively skewed
+
+```{r}
+hist(median_house_value, main = "Histogram of Median House Value", xlab= "Median House Value")
+boxplot(median_house_value, main = "Histogram of Median House Value", ylab="Median House Value")
+
+```
+
+6. Is the median house value distribution normal. The qq plot indicates the sample of median house value doesn't have a normal distribution.This further indicates that the sample of median house value is skewed.
+
+```{r}
+qqnorm(median_house_value)
+
+```
+
+7. Let's find the outliers if any. There happens to be 1071 outliers
+
+```{r}
+IQR  = IQR(median_house_value)
+quantile(median_house_value)
+left = 119600 - 1.5*IQR
+right = 264725 + 1.5*IQR
+nbr_outliers = housing[median_house_value<left | median_house_value >right,]
+nbr_outliers
+
+
+```
+
+8.The correlation matrix and scattered plots seem to indicate some numerical attributes do have a positive/negative linear correlation with median_house_value. The Latitude has a weak negative correlation with the median house value
+while the housing median age and total rooms have a weak positive correlation with the median house value. On the other end, the median income has a stronger positive correlation with the median house value.
+
+```{r}
+numeric_attributes = housing[,c("longitude", "latitude", "housing_median_age", "total_rooms", "total_bedrooms", "population", "households", "median_income", "median_house_value")]
+plot(numeric_attributes)
+
+cor(numeric_attributes)
+
+```
+
+9. The side by side plot seems to indicate that the median house value for inland houses is low but it is higher for houses with island proximity. The median house values near bay and near ocean seems to be slightly higher than at the ocean. The one way test shows the p-value less than the significance level of 0.01. Therefore, we can conclude that there is a statistical significant difference between the mean of the median house value and the ocean proximity. There is an association between the median house value and ocean proximity.
+
+```{r}
+
+plot(median_house_value ~ ocean_proximity, data = housing)
+oneway.test(median_house_value ~ ocean_proximity, data = housing)
+
+
+```
+
+10.Factor variable “Is_Inland” which takes the value “Yes” if the ocean_proximity is “Inland” and No” otherwise.
+
+```{r}
+Is_Inland = factor(c(ifelse( ocean_proximity == "INLAND", "Yes", "No")))
+
+```
+
+11. The side by side box plot indicates the median house values for inland houses is lower than houses not inland. The T-test has a p-value lower than the significance level of 0.01 which further demonstrates that there is a statistical difference between the mean of median house values for inland and not inland houses. There is an association between the median house values and whether the house is inland or not.
+```{r}
+plot(median_house_value ~ Is_Inland)
+t.test(median_house_value~Is_Inland)
+
+
+```

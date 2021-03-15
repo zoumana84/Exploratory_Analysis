@@ -1,0 +1,83 @@
+---
+title: "problem 1"
+output:
+  html_document:
+    df_print: paged
+---
+
+ 
+
+
+
+```{R}
+
+LasVegas = read.csv("LasVegasTripAdvisorReviews-Dataset.csv",  stringsAsFactors=TRUE, sep = ";")
+LasVegas
+attach(LasVegas)
+
+
+```
+
+
+ 
+ 1. Exploring the structure of the data set, we can see that the data frame has 20 variables of 504 observations. 6 of the variables are numeric, the rest are categorical.
+
+```{R}
+str(LasVegas)
+summary(LasVegas)
+
+```
+ 
+ 2. Does any of the variables have missing values? There are no variables with missing values. The summary of the LasVegas variable also confirms that no variables have missing values
+```{R}
+sum(is.na(LasVegas))
+
+```
+
+3. Draw a histogram of the score variable. The histogram shows the majority of scores are 3.5 and higher
+```{R}
+hist(Score, main = "Histogram of user Scores", xlab= "Score")
+
+```
+
+4. Find the mode of Score. The mode is 5.
+
+```{R}
+t = table(Score)
+t[t == max(t)]
+names(t[t == max(t)])
+
+```
+
+5. The quantile of scores. According to the quantile of Score, the median is 4.
+
+```{R}
+quantile(Score)
+
+
+```
+
+6. Sentiment variable:
+
+```{R}
+
+sentiment = factor(c(ifelse( Score >= 4, "positive", "negative")))
+summary(sentiment)
+
+```
+
+7. Based on the chi-square statistical analysis, it can be concluded that the variables related to sentiment are: Pool, Free internet, hotel stars.
+
+```{R}
+install.packages("gmodels")
+library(gmodels)
+CrossTable(x = sentiment, y = Pool,chisq = TRUE)
+CrossTable(x = sentiment, y = Gym,chisq = TRUE)
+CrossTable(x = sentiment, y = Free.internet,chisq = TRUE)
+CrossTable(x = sentiment, y = Period.of.stay,chisq = TRUE)
+CrossTable(x = sentiment, y = Traveler.type,chisq = TRUE)
+CrossTable(x = sentiment, y = Hotel.stars,chisq = TRUE)
+model1 = oneway.test(Hotel.stars ~ Member.years, data = LasVegas)
+summary(model1)
+
+```
